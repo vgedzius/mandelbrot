@@ -14,14 +14,16 @@ var canvas;
 var resetBtn;
 var maxIterationsInput;
 var resolutionSelect;
+var coloringMethodSelect;
 
 function setup() {
   pixelDensity(1);
   noLoop();
   // Initialise controls
-  resetBtn            = select('#reset');
-  maxIterationsInput  = select('#max-iterations');
-  resolutionSelect    = select('#resolution');
+  resetBtn              = select('#reset');
+  maxIterationsInput    = select('#max-iterations');
+  resolutionSelect      = select('#resolution');
+  coloringMethodSelect  = select('#coloring-method');
 
   var resolution = getResolution(resolutionSelect.value());
 
@@ -50,7 +52,7 @@ function setup() {
     var resolution = getResolution(resolutionSelect.value());
     canvas = resizeCanvas(resolution.width, resolution.height);
 
-    redraw();
+    // redraw();
   });
 
   initVariables();
@@ -82,14 +84,22 @@ function draw() {
         n++;
       }
 
-      var bright = map(n, 0, maxIterations, 0, 1);
-      bright = map(sqrt(bright), 0, 1, 0, 255);
+      var rgb;
 
-      if (n === maxIterations) {
-        bright = 0;
+      switch(coloringMethodSelect.value()) {
+        case 'escape-linear' :
+          rgb = escapeTimeLinear(n);
+          break;
+        case 'escape-map' :
+          rgb = escapeTimeColorMap(n)
+          break;
+        default:
+          rgb = escapeTimeLinear(n);
       }
+
+      // console.log(rgb);
       
-      stroke(bright);
+      stroke(rgb.r, rgb.g, rgb.b);
       point(x, y);
     }
   }
@@ -116,4 +126,52 @@ function getResolution(input) {
     width: arr[0],
     height: arr[1]
   };
+}
+
+function escapeTimeLinear(n) {
+  var bright = map(n, 0, maxIterations, 0, 1);
+      bright = map(sqrt(bright), 0, 1, 0, 255);
+
+  if (n === maxIterations) {
+    bright = 0;
+  }
+
+  return {
+    r: bright,
+    g: bright,
+    b: bright,
+  }
+}
+
+function escapeTimeColorMap(n) {
+  if (n == maxIterations) {
+    return {
+      r: 0,
+      g: 0,
+      b: 0,
+    }
+  } else {
+    var mapping = [];
+    var i = map(n, 0, maxIterations, 0, 1);
+        i = floor(map(sqrt(i), 0, 1, 0, 15));
+
+    mapping[0]  = {r: 66,  g: 30,  b: 15};
+    mapping[1]  = {r: 25,  g: 7,   b: 26};
+    mapping[2]  = {r: 9,   g: 1,   b: 47};
+    mapping[3]  = {r: 4,   g: 4,   b: 73};
+    mapping[4]  = {r: 0,   g: 7,   b: 100};
+    mapping[5]  = {r: 12,  g: 44,  b: 138};
+    mapping[6]  = {r: 24,  g: 82,  b: 177};
+    mapping[7]  = {r: 57,  g: 125, b: 209};
+    mapping[8]  = {r: 134, g: 181, b: 229};
+    mapping[9]  = {r: 211, g: 236, b: 248};
+    mapping[10] = {r: 241, g: 233, b: 191};
+    mapping[11] = {r: 248, g: 201, b: 95};
+    mapping[12] = {r: 255, g: 170, b: 0};
+    mapping[13] = {r: 204, g: 128, b: 0};
+    mapping[14] = {r: 153, g: 87,  b: 0};
+    mapping[15] = {r: 106, g: 52,  b: 3};
+
+    return mapping[i];
+  }
 }

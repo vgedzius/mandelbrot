@@ -37,6 +37,16 @@
         </div>
 
         <div class="form-group row">
+          <label for="max-iterations" class="col-3 col-form-label">Coloring Method</label>
+          <div class="col-9">
+            <select class="form-control" id="coloring-method">
+              <option value="escape-linear" selected="selected">Escape Time (Linear)</option>
+              <option value="escape-map">Escape Time (Color Map)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group row">
           <div class="col-9 offset-3">
             <button type="button" id="reset" class="btn btn-primary">Reset</button>
           </div>
