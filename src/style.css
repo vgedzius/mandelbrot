@@ -5,3 +5,11 @@
 #canvas-container, .controls {
   margin: 20px;
 }
+
+.full-screen #canvas-container {
+  margin: 0;
+}
+
+.full-screen .controls {
+  display: none;
+}

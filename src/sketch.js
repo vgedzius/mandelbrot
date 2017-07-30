@@ -15,6 +15,8 @@ var resetBtn;
 var maxIterationsInput;
 var resolutionSelect;
 var coloringMethodSelect;
+var fullScreenBtn;
+var canvasContainer;
 
 function setup() {
   pixelDensity(1);
@@ -24,6 +26,8 @@ function setup() {
   maxIterationsInput    = select('#max-iterations');
   resolutionSelect      = select('#resolution');
   coloringMethodSelect  = select('#coloring-method');
+  fullScreenBtn         = select('#full-screen');
+  body                  = select('body');
 
   var resolution = getResolution(resolutionSelect.value());
 
@@ -43,19 +47,38 @@ function setup() {
     redraw();
   });
 
-  
-
   // Code for reset button
   resetBtn.mousePressed(function () {
-    initVariables();
+    initVariables(width, height, false);
 
     var resolution = getResolution(resolutionSelect.value());
     canvas = resizeCanvas(resolution.width, resolution.height);
-
-    // redraw();
   });
 
-  initVariables();
+  fullScreenBtn.mousePressed(function () {
+    var fs          = fullscreen();
+    fullscreen(!fs);
+  });
+
+  initVariables(width, height);
+}
+
+function windowResized() {
+  var resolution  = getResolution(resolutionSelect.value());
+  var fs = false;
+  if (window.innerHeight == screen.height) {
+    body.addClass('full-screen');
+    fs = true;
+  } else {
+    body.removeClass('full-screen');
+    fs = false;
+  }
+
+  var newWidth    = fs ? windowWidth : resolution.width;
+  var newHeight   = fs ? windowHeight : resolution.height;
+
+  initVariables(newWidth, newHeight);
+  canvas = resizeCanvas(newWidth, newHeight);
 }
 
 function draw() {
@@ -105,13 +128,13 @@ function draw() {
   }
 }
 
-function initVariables() {
+function initVariables(newWidth, newHeight) {
   maxIterations = parseInt(maxIterationsInput.value());
 
   startMinA = -2;
   startMaxA = 2;
-  startMinB = -1.5;
-  startMaxB = 1.5;
+  startMinB = newHeight * startMinA / newWidth;
+  startMaxB = newHeight * startMaxA / newWidth;
 
   minA = startMinA;
   maxA = startMaxA;
@@ -123,8 +146,8 @@ function getResolution(input) {
   var arr = input.split('x');
 
   return {
-    width: arr[0],
-    height: arr[1]
+    width: parseInt(arr[0]),
+    height: parseInt(arr[1])
   };
 }
 
