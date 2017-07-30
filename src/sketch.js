@@ -152,9 +152,6 @@ function escapeTimeColorMap(n) {
     }
   } else {
     var mapping = [];
-    var i = map(n, 0, maxIterations, 0, 1);
-        i = floor(map(sqrt(i), 0, 1, 0, 15));
-
     mapping[0]  = {r: 66,  g: 30,  b: 15};
     mapping[1]  = {r: 25,  g: 7,   b: 26};
     mapping[2]  = {r: 9,   g: 1,   b: 47};
@@ -171,6 +168,8 @@ function escapeTimeColorMap(n) {
     mapping[13] = {r: 204, g: 128, b: 0};
     mapping[14] = {r: 153, g: 87,  b: 0};
     mapping[15] = {r: 106, g: 52,  b: 3};
+
+    var i = n % mapping.length;
 
     return mapping[i];
   }
