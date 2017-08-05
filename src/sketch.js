@@ -9,6 +9,9 @@ var maxA;
 var minB;
 var maxB;
 
+var maxIterations;
+var escapeRadius = 2;
+
 // Declare controls
 var canvas;
 var resetBtn;
@@ -100,32 +103,33 @@ function draw() {
         a = aa + ca;
         b = bb + cb;
 
-        if ( a * a + b * b > 4 ) {
+        if ( a * a + b * b > escapeRadius * escapeRadius ) {
           break;
         }
 
         n++;
       }
 
-      var rgb;
-
       switch(coloringMethodSelect.value()) {
         case 'escape-linear' :
-          rgb = escapeTimeLinear(n);
+          pixel(x, y, escapeTimeLinear(n));
           break;
         case 'escape-map' :
-          rgb = escapeTimeColorMap(n)
+          pixel(x, y, escapeTimeColorMap(n));
+          break;
+        case 'smooth-color' :
+          pixel(x, y, smoothColor(n, a, b));
           break;
         default:
-          rgb = escapeTimeLinear(n);
+          pixel(x, y, escapeTimeLinear(n));
       }
-
-      // console.log(rgb);
-      
-      stroke(rgb.r, rgb.g, rgb.b);
-      point(x, y);
     }
   }
+}
+
+function pixel(x, y, color) {
+  stroke(color);
+  point(x, y);
 }
 
 function initVariables(newWidth, newHeight) {
@@ -159,41 +163,64 @@ function escapeTimeLinear(n) {
     bright = 0;
   }
 
-  return {
-    r: bright,
-    g: bright,
-    b: bright,
-  }
+  return color(bright, bright, bright);
 }
 
 function escapeTimeColorMap(n) {
   if (n == maxIterations) {
-    return {
-      r: 0,
-      g: 0,
-      b: 0,
-    }
+    return color(0, 0, 0);
   } else {
-    var mapping = [];
-    mapping[0]  = {r: 66,  g: 30,  b: 15};
-    mapping[1]  = {r: 25,  g: 7,   b: 26};
-    mapping[2]  = {r: 9,   g: 1,   b: 47};
-    mapping[3]  = {r: 4,   g: 4,   b: 73};
-    mapping[4]  = {r: 0,   g: 7,   b: 100};
-    mapping[5]  = {r: 12,  g: 44,  b: 138};
-    mapping[6]  = {r: 24,  g: 82,  b: 177};
-    mapping[7]  = {r: 57,  g: 125, b: 209};
-    mapping[8]  = {r: 134, g: 181, b: 229};
-    mapping[9]  = {r: 211, g: 236, b: 248};
-    mapping[10] = {r: 241, g: 233, b: 191};
-    mapping[11] = {r: 248, g: 201, b: 95};
-    mapping[12] = {r: 255, g: 170, b: 0};
-    mapping[13] = {r: 204, g: 128, b: 0};
-    mapping[14] = {r: 153, g: 87,  b: 0};
-    mapping[15] = {r: 106, g: 52,  b: 3};
+    var pallete = getPallete();
+    var i = n % pallete.length;
 
-    var i = n % mapping.length;
-
-    return mapping[i];
+    return pallete[i];
   }
+}
+
+function smoothColor(n, a, b) {
+  // colorMode(HSB);
+  if (n == maxIterations) {
+    return color(0, 0, 0);
+  } else {
+    var pallete = getPallete();
+
+    var logZn   = Math.log(a * a + b * b) / escapeRadius;
+    var mu      = n + 1 -
+                  Math.log( logZn / Math.log(escapeRadius) ) / Math.log(escapeRadius);
+    mu          = mu / maxIterations * pallete.length;
+
+    var clr1 = floor(abs(mu));
+    var t2 = mu - clr1;
+    var t1 = 1 - t2;
+    clr1 = clr1 % pallete.length;
+    var clr2 = (clr1 + 1) % pallete.length;
+
+    var r = red(pallete[clr1]) * t1 + red(pallete[clr2]) * t2;
+    var g = green(pallete[clr1]) * t1 + green(pallete[clr2]) * t2;
+    var b = blue(pallete[clr1]) * t1 + blue(pallete[clr2]) * t2;
+
+    return color(r, g, b);
+  }
+}
+
+function getPallete() {
+  var mapping = [];
+  mapping[0]  = color(60,  30,  15);
+  mapping[1]  = color(25,  7,   26);
+  mapping[2]  = color(9,   1,   47);
+  mapping[3]  = color(4,   4,   73);
+  mapping[4]  = color(0,   7,   100);
+  mapping[5]  = color(12,  44,  138);
+  mapping[6]  = color(24,  82,  177);
+  mapping[7]  = color(57,  125, 209);
+  mapping[8]  = color(134, 181, 229);
+  mapping[9]  = color(211, 236, 248);
+  mapping[10] = color(241, 233, 191);
+  mapping[11] = color(248, 201, 95);
+  mapping[12] = color(255, 170, 0);
+  mapping[13] = color(204, 128, 0)
+  mapping[14] = color(153, 87,  0);
+  mapping[15] = color(106, 52,  3);
+
+  return mapping;
 }
