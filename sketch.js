@@ -195,23 +195,22 @@ function smoothColor(n, a, b) {
 }
 
 function getPallete() {
-  var mapping = [];
-  mapping[0] = color(60, 30, 15);
-  mapping[1] = color(25, 7, 26);
-  mapping[2] = color(9, 1, 47);
-  mapping[3] = color(4, 4, 73);
-  mapping[4] = color(0, 7, 100);
-  mapping[5] = color(12, 44, 138);
-  mapping[6] = color(24, 82, 177);
-  mapping[7] = color(57, 125, 209);
-  mapping[8] = color(134, 181, 229);
-  mapping[9] = color(211, 236, 248);
-  mapping[10] = color(241, 233, 191);
-  mapping[11] = color(248, 201, 95);
-  mapping[12] = color(255, 170, 0);
-  mapping[13] = color(204, 128, 0);
-  mapping[14] = color(153, 87, 0);
-  mapping[15] = color(106, 52, 3);
-
-  return mapping;
+  return [
+    color(60, 30, 15),
+    color(25, 7, 26),
+    color(9, 1, 47),
+    color(4, 4, 73),
+    color(0, 7, 100),
+    color(12, 44, 138),
+    color(24, 82, 177),
+    color(57, 125, 209),
+    color(134, 181, 229),
+    color(211, 236, 248),
+    color(241, 233, 191),
+    color(248, 201, 95),
+    color(255, 170, 0),
+    color(204, 128, 0),
+    color(153, 87, 0),
+    color(106, 52, 3)
+  ];
 }
